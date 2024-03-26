@@ -37,33 +37,34 @@ public class ParquetInputFile {
   public ParquetInputFile(Path path, FilterCompat.Filter filter) {
     this.path = path;
     this.filter = filter;
-    inputFile = new InputFile() {
-      @Override
-      public long getLength() {
-        return FileUtils.size(path);
-      }
+    inputFile = new InputFile();
+    // inputFile = new InputFile() {
+    //   @Override
+    //   public long getLength() {
+    //     return FileUtils.size(path);
+    //   }
 
-      @Override
-      public SeekableInputStream newStream() throws IOException {
-        var channel = Files.newByteChannel(path);
-        var inputStream = Channels.newInputStream(channel);
+    //   @Override
+    //   public SeekableInputStream newStream() throws IOException {
+    //     var channel = Files.newByteChannel(path);
+    //     var inputStream = Channels.newInputStream(channel);
 
-        return new DelegatingSeekableInputStream(inputStream) {
-          private long position;
+    //     return new DelegatingSeekableInputStream(inputStream) {
+    //       private long position;
 
-          @Override
-          public long getPos() {
-            return position;
-          }
+    //       @Override
+    //       public long getPos() {
+    //         return position;
+    //       }
 
-          @Override
-          public void seek(long newPos) throws IOException {
-            channel.position(newPos);
-            position = newPos;
-          }
-        };
-      }
-    };
+    //       @Override
+    //       public void seek(long newPos) throws IOException {
+    //         channel.position(newPos);
+    //         position = newPos;
+    //       }
+    //     };
+    //   }
+    // };
     try (var file = ParquetFileReader.open(inputFile)) {
       metadata = file.getFooter();
     } catch (IOException e) {
