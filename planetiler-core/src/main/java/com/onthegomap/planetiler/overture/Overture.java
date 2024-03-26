@@ -96,16 +96,16 @@ public class Overture implements Profile {
   public void processFeature(SourceFeature sourceFeature, FeatureCollector features) {
     if (sourceFeature instanceof AvroParquetFeature avroFeature) {
       switch (sourceFeature.getSourceLayer()) {
-        case "admins/administrativeBoundary" -> processAdministrativeBoundary(avroFeature, features);
-        case "admins/locality" -> processLocality(avroFeature, features);
-        case "admins/localityArea" -> processLocalityArea(avroFeature, features);
-        case "buildings/building", "buildings/part" -> processBuilding(avroFeature, features);
-        case "places/place" -> processPlace(avroFeature, features);
-        case "transportation/connector" -> processConnector(avroFeature, features);
-        case "transportation/segment" -> processSegment(avroFeature, features);
-        case "base/land" -> processLand(avroFeature, features);
-        case "base/landUse" -> processLandUse(avroFeature, features);
-        case "base/water" -> processWater(avroFeature, features);
+        // case "admins/administrativeBoundary" -> processAdministrativeBoundary(avroFeature, features);
+        // case "admins/locality" -> processLocality(avroFeature, features);
+        // case "admins/localityArea" -> processLocalityArea(avroFeature, features);
+        case "buildings/building" -> processBuilding(avroFeature, features);
+        // case "places/place" -> processPlace(avroFeature, features);
+        // case "transportation/connector" -> processConnector(avroFeature, features);
+        // case "transportation/segment" -> processSegment(avroFeature, features);
+        // case "base/land" -> processLand(avroFeature, features);
+        // case "base/landUse" -> processLandUse(avroFeature, features);
+        // case "base/water" -> processWater(avroFeature, features);
         default -> System.err.println("Not handled: " + sourceFeature.getSourceLayer());
       }
     }
@@ -523,34 +523,10 @@ public class Overture implements Profile {
   private void processBuilding(AvroParquetFeature sourceFeature, FeatureCollector features) {
     if (sourceFeature.canBePolygon()) {
       Struct struct = sourceFeature.getStruct();
-      var commonTags = getCommonTags(struct);
-      commonTags.put("class", struct.get("class").asString());
       var feature = features.polygon(sourceFeature.getSourceLayer())
         .setMinZoom(13)
         .setMinPixelSize(2)
-        .putAttrs(commonTags)
-        .setAttr("height", struct.get("height").asDouble())
-        .setAttr("numFloors", struct.get("numFloors").asInt())
-        .setAttr("roofShape", struct.get("roofShape").asString())
-        .setAttr("roofOrientation", struct.get("roofOrientation").asString())
-        .setAttr("roofDirection", struct.get("roofDirection").asDouble())
-        .setAttr("eaveHeight", struct.get("eaveHeight").asDouble())
-        .setAttr("roofMaterial", struct.get("roofMaterial").asString())
-        .setAttr("facadeMaterial", struct.get("facadeMaterial").asString())
-        .setAttr("facadeColor", struct.get("facadeColor").asString())
-        .setAttr("roofColor", struct.get("roofColor").asString())
-        .setAttr("buildingId", struct.get("buildingId").asString());
-      if (Boolean.TRUE.equals(struct.get("hasParts").asBoolean())) {
-        feature.setAttr("hasParts", true)
-          .setAttr("id", struct.get("id").asString());
-      }
-      var names = getNames(struct.get("names"));
-      if (!names.isEmpty()) {
-        features.centroidIfConvex(sourceFeature.getSourceLayer())
-          .setMinZoom(14)
-          .putAttrs(names)
-          .putAttrs(commonTags);
-      }
+        .setAttr("height", struct.get("height").asDouble());
     }
   }
 
