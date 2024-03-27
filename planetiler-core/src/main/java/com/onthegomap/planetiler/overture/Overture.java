@@ -524,7 +524,7 @@ public class Overture implements Profile {
     if (sourceFeature.canBePolygon()) {
       Struct struct = sourceFeature.getStruct();
       var feature = features.polygon(sourceFeature.getSourceLayer())
-        .setMinZoom(13)
+        .setMinZoom(14)
         .setMinPixelSize(2)
         .setAttr("height", struct.get("height").asDouble());
     }
